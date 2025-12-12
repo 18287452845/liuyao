@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { mbtiQuestions } from '../../../lib/mbti'
+import { mbtiQuestions } from '../../lib/mbti'
 
 export default function MBTITest() {
   const [currentQuestion, setCurrentQuestion] = useState(0)
@@ -50,7 +50,7 @@ export default function MBTITest() {
     }
   }
 
-  const submitTest = async (finalAnswers: any[]) => {
+  const submitTest = async (finalAnswers: Array<{questionId: number; dimension: string; text: string}>) => {
     setIsLoading(true)
     setError('')
     
@@ -229,7 +229,7 @@ export default function MBTITest() {
           </h3>
 
           <div className="space-y-3">
-            {question.options.map((option, index) => (
+            {question.options.map((option: { text: string; dimension: string }, index: number) => (
               <button
                 key={index}
                 onClick={() => handleAnswer(option)}

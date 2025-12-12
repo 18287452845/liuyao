@@ -2,8 +2,14 @@
 
 import { useState } from 'react'
 
+interface InvitationCode {
+  id: number
+  code: string
+  expiresAt: string
+}
+
 export default function InvitationCodeManager() {
-  const [codes, setCodes] = useState<any[]>([])
+  const [codes, setCodes] = useState<InvitationCode[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
@@ -32,7 +38,7 @@ export default function InvitationCodeManager() {
       setSuccess(`邀请码生成成功：${data.invitationCode.code}`)
       // 将新生成的邀请码添加到列表中
       setCodes(prev => [...prev, data.invitationCode])
-    } catch (err) {
+    } catch {
       setError('网络错误，请重试')
     } finally {
       setIsLoading(false)

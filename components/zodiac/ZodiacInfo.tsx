@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { zodiacSigns } from '../../../lib/zodiac'
+import { zodiacSigns } from '../../lib/zodiac'
 
 export default function ZodiacInfo() {
   const [selectedSign, setSelectedSign] = useState<string>('')
