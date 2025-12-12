@@ -1,0 +1,151 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  ADMIN
+  USER
+}
+
+enum DivinationMethod {
+  ZENG_SHAN_BU_YI
+  BU_SHI_ZHENG_ZONG
+}
+
+model User {
+  id          Int       @id @default(autoincrement())
+  username    String    @unique
+  email       String    @unique
+  password    String
+  role        UserRole  @default(USER)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  
+  // Divination records
+  divinationRecords DivinationRecord[]
+  
+  // MBTI test results
+  mbtiResults       MbtiResult[]
+  
+  // Zodiac preferences and history
+  zodiacPreferences ZodiacPreference[]
+  zodiacReadings    ZodiacReading[]
+  
+  // User sessions
+  sessions          Session[]
+  
+  // Invitation code relations
+  createdInvitations InvitationCode[] @relation("UserCreatedInvitations")
+  usedInvitations    InvitationCode[] @relation("UserUsedInvitations")
+  
+  // MBTI match relations
+  mbtiMatches        MbtiMatch[]
+  
+  @@map("users")
+}
+
+model InvitationCode {
+  id          Int       @id @default(autoincrement())
+  code        String    @unique
+  used        Boolean   @default(false)
+  usedBy      Int?
+  usedAt      DateTime?
+  createdBy   Int
+  createdAt   DateTime  @default(now())
+  expiresAt   DateTime
+  
+  user        User?     @relation("UserUsedInvitations", fields: [usedBy], references: [id])
+  creator     User      @relation("UserCreatedInvitations", fields: [createdBy], references: [id])
+  
+  @@map("invitation_codes")
+}
+
+model Session {
+  id        Int       @id @default(autoincrement())
+  userId    Int
+  token     String    @unique
+  expiresAt DateTime
+  createdAt DateTime  @default(now())
+  
+  user      User      @relation(fields: [userId], references: [id])
+  
+  @@map("sessions")
+}
+
+model DivinationRecord {
+  id          Int               @id @default(autoincrement())
+  userId      Int
+  method      DivinationMethod
+  hexagram    String
+  question    String?
+  interpretation String?
+  createdAt   DateTime          @default(now())
+  
+  user        User              @relation(fields: [userId], references: [id])
+  
+  @@map("divination_records")
+}
+
+model MbtiResult {
+  id          Int       @id @default(autoincrement())
+  userId      Int
+  mbtiType    String
+  eScore      Int       // Extraversion
+  sScore      Int       // Sensing
+  tScore      Int       // Thinking
+  jScore      Int       // Judging
+  answers     Json      // Store all question answers
+  createdAt   DateTime  @default(now())
+  
+  user        User      @relation(fields: [userId], references: [id])
+  matches     MbtiMatch[]
+  
+  @@map("mbti_results")
+}
+
+model MbtiMatch {
+  id            Int         @id @default(autoincrement())
+  userId        Int
+  resultId      Int
+  matchedType   String
+  compatibility Int         // Percentage 0-100
+  details       String?
+  createdAt     DateTime    @default(now())
+  
+  user          User        @relation(fields: [userId], references: [id])
+  result        MbtiResult  @relation(fields: [resultId], references: [id])
+  
+  @@map("mbti_matches")
+}
+
+model ZodiacPreference {
+  id          Int       @id @default(autoincrement())
+  userId      Int
+  sign        String    // zodiac sign
+  preference  String?   // user notes about this sign
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  
+  user        User      @relation(fields: [userId], references: [id])
+  
+  @@unique([userId, sign])
+  @@map("zodiac_preferences")
+}
+
+model ZodiacReading {
+  id          Int       @id @default(autoincrement())
+  userId      Int
+  sign        String
+  readingType String    // "daily", "weekly", "monthly", "yearly"
+  content     String
+  createdAt   DateTime  @default(now())
+  
+  user        User      @relation(fields: [userId], references: [id])
+  
+  @@map("zodiac_readings")
+}
