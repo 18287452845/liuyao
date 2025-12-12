@@ -12,7 +12,7 @@ export async function POST(request: NextRequest) {
 
     // 这里应该调用DeepSeek API进行解释
     // 目前先用简单的模拟
-    const mockInterpretation = `
+    let mockInterpretation = `
       卦象：${hexagram?.name || '未知'}
       
       传统解释：
@@ -41,7 +41,7 @@ export async function POST(request: NextRequest) {
         where: {
           userId,
           hexagram: hexagram.name,
-          interpretation: { is: null }
+          interpretation: null
         },
         data: {
           interpretation: mockInterpretation

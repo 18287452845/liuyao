@@ -95,6 +95,7 @@ export async function POST(request: NextRequest) {
     await createSession(user.id, token)
 
     // 返回用户信息（不包含密码）
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { password: _, ...userWithoutPassword } = user
 
     return NextResponse.json({

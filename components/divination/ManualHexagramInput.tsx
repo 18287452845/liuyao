@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { hexagrams } from '../../../lib/hexagrams'
+import { hexagrams } from '../../lib/hexagrams'
 
 export default function ManualHexagramInput() {
   const [hexagramNumber, setHexagramNumber] = useState(1)

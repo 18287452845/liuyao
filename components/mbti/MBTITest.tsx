@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { mbtiQuestions } from '../../../lib/mbti'
+import { mbtiQuestions } from '../../lib/mbti'
 
 export default function MBTITest() {
   const [currentQuestion, setCurrentQuestion] = useState(0)
@@ -50,7 +50,7 @@ export default function MBTITest() {
     }
   }
 
-  const submitTest = async (finalAnswers: any[]) => {
+  const submitTest = async (finalAnswers: Array<{questionId: number; dimension: string; text: string}>) => {
     setIsLoading(true)
     setError('')
     
@@ -164,7 +164,7 @@ export default function MBTITest() {
           <div className="p-6 bg-blue-50 dark:bg-blue-900/20 rounded-lg mb-6">
             <h4 className="font-medium text-gray-900 dark:text-white mb-3">性格匹配</h4>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {result.matches.map((match: any) => (
+              {result.matches.map((match) => (
                 <div key={match.id} className="flex items-center justify-between p-3 bg-white dark:bg-gray-800 rounded">
                   <div>
                     <div className="font-medium text-gray-900 dark:text-white">{match.matchedType}</div>
@@ -229,9 +229,9 @@ export default function MBTITest() {
           </h3>
 
           <div className="space-y-3">
-            {question.options.map((option, index) => (
+            {question.options.map((option) => (
               <button
-                key={index}
+                key={option.text}
                 onClick={() => handleAnswer(option)}
                 className="w-full p-4 text-left border border-gray-300 dark:border-gray-600 rounded-lg hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors"
               >

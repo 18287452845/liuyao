@@ -25,13 +25,19 @@ services:
       - "3000:3000"
     environment:
       - NODE_ENV=production
-      - DATABASE_URL=mysql://divination_user:divination_password@db:3306/divination_db
+      - DATABASE_URL=mysql://divination_user:divination_password@db:3306/divination_db?connection_limit=10&pool_timeout=20&connect_timeout=10
       - JWT_SECRET=your-super-secret-jwt-key-change-in-production
       - DEEPSEEK_API_KEY=your-deepseek-api-key
     depends_on:
       - db
     volumes:
       - ./.env:/app/.env
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3000/api/health', (r) => process.exit(r.statusCode === 200 ? 0 : 1))"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
 
 volumes:
   mysql_data:
