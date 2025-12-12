@@ -23,6 +23,7 @@ export async function GET(request: NextRequest) {
 
     // 不返回密码
     const usersWithoutPasswords = users.map(user => {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { password, ...userWithoutPassword } = user
       return userWithoutPassword
     })
@@ -31,7 +32,7 @@ export async function GET(request: NextRequest) {
       success: true,
       users: usersWithoutPasswords
     })
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       { error: '服务器错误' },
       { status: 500 }

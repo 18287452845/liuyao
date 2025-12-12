@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { hexagrams, buShiZhengZong } from '../../../lib/hexagrams'
+import { hexagrams } from '../../../lib/hexagrams'
 import { prisma } from '../../../lib/db'
 
 export async function POST(request: NextRequest) {

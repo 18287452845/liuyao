@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect } from 'react'
 import Navigation from '../components/layout/Navigation'
 import Link from 'next/link'
 
@@ -8,7 +8,7 @@ export default function Home() {
   const [user, setUser] = useState<{ id: number; username: string; role: string } | null>(null)
   const [isLoading, setIsLoading] = useState(true)
 
-  const checkAuthStatus = useCallback(() => {
+  useEffect(() => {
     // 检查用户登录状态
     const token = localStorage.getItem('token')
     const userData = localStorage.getItem('user')
@@ -22,10 +22,6 @@ export default function Home() {
     }
     setIsLoading(false)
   }, [])
-
-  useEffect(() => {
-    checkAuthStatus()
-  }, [checkAuthStatus])
 
   if (isLoading) {
     return (

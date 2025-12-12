@@ -19,7 +19,8 @@ export async function GET(request: NextRequest) {
     }
 
     // 获取兼容性评分
-    const compatibilityScore = zodiacCompatibility[sign1 as keyof typeof zodiacCompatibility]?.[sign2] || 50
+    const sign1Compatibility = zodiacCompatibility[sign1 as keyof typeof zodiacCompatibility]
+    const compatibilityScore = (sign1Compatibility?.[sign2 as keyof typeof sign1Compatibility] as number) || 50
 
     // 生成详细的兼容性分析
     const compatibilityAnalysis = generateCompatibilityAnalysis(sign1, sign2, compatibilityScore)
@@ -35,7 +36,7 @@ export async function GET(request: NextRequest) {
         advice: getCompatibilityAdvice(compatibilityScore)
       }
     })
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       { error: '服务器错误' },
       { status: 500 }

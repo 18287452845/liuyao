@@ -20,7 +20,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       message: '退出成功'
     })
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       { error: '服务器错误' },
       { status: 500 }
