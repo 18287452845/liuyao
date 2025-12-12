@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 
@@ -9,7 +9,7 @@ export default function Navigation() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const router = useRouter()
 
-  useEffect(() => {
+  const checkAuthStatus = useCallback(() => {
     // 检查用户登录状态
     const token = localStorage.getItem('token')
     const userData = localStorage.getItem('user')
@@ -22,6 +22,10 @@ export default function Navigation() {
       }
     }
   }, [])
+
+  useEffect(() => {
+    checkAuthStatus()
+  }, [checkAuthStatus])
 
   const handleLogout = () => {
     localStorage.removeItem('token')
