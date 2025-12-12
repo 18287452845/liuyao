@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '../../../lib/db'
-import { verifyPassword, generateToken, createSession, getUserFromToken } from '../../../lib/auth'
+import { verifyPassword, generateToken, createSession } from '../../../lib/auth'
 import { z } from 'zod'
 
 const loginSchema = z.object({
@@ -44,6 +44,7 @@ export async function POST(request: NextRequest) {
     await createSession(user.id, token)
 
     // 返回用户信息（不包含密码）
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { password: _, ...userWithoutPassword } = user
     
     return NextResponse.json({

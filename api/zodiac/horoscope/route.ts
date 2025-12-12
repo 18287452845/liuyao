@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { zodiacSigns, zodiacCompatibility } from '../../../lib/zodiac'
+import { zodiacSigns } from '../../../lib/zodiac'
 
 export async function GET(request: NextRequest) {
   try {
@@ -30,7 +30,7 @@ export async function GET(request: NextRequest) {
       period,
       horoscope
     })
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       { error: '服务器错误' },
       { status: 500 }

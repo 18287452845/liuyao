@@ -57,7 +57,7 @@ export async function POST(request: NextRequest) {
     for (const [compatibleType, compatibility] of Object.entries(typeInfo.compatibleWith)) {
       if (mbtiTypes[compatibleType as keyof typeof mbtiTypes]) {
         // 计算兼容性评分
-        const score = compatibility
+        const score = typeof compatibility === 'number' ? compatibility : parseInt(String(compatibility), 10)
         // 可以根据实际情况调整评分逻辑
         
         const match = await prisma.mbtiMatch.create({

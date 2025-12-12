@@ -19,12 +19,12 @@ enum DivinationMethod {
 
 model User {
   id          Int       @id @default(autoincrement())
-  username    String    @unique
-  email       String    @unique
-  password    String
+  username    String    @unique @db.VarChar(50)
+  email       String    @unique @db.VarChar(100)
+  password    String    @db.VarChar(255)
   role        UserRole  @default(USER)
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  createdAt   DateTime  @default(now()) @db.DateTime(0)
+  updatedAt   DateTime  @updatedAt @db.DateTime(0)
   
   // Divination records
   divinationRecords DivinationRecord[]
@@ -46,34 +46,43 @@ model User {
   // MBTI match relations
   mbtiMatches        MbtiMatch[]
   
+  @@index([email])
+  @@index([role])
+  @@index([createdAt])
   @@map("users")
 }
 
 model InvitationCode {
   id          Int       @id @default(autoincrement())
-  code        String    @unique
+  code        String    @unique @db.VarChar(100)
   used        Boolean   @default(false)
   usedBy      Int?
-  usedAt      DateTime?
+  usedAt      DateTime? @db.DateTime(0)
   createdBy   Int
-  createdAt   DateTime  @default(now())
-  expiresAt   DateTime
+  createdAt   DateTime  @default(now()) @db.DateTime(0)
+  expiresAt   DateTime  @db.DateTime(0)
   
-  user        User?     @relation("UserUsedInvitations", fields: [usedBy], references: [id])
-  creator     User      @relation("UserCreatedInvitations", fields: [createdBy], references: [id])
+  user        User?     @relation("UserUsedInvitations", fields: [usedBy], references: [id], onDelete: SetNull)
+  creator     User      @relation("UserCreatedInvitations", fields: [createdBy], references: [id], onDelete: Cascade)
   
+  @@index([usedBy])
+  @@index([createdBy])
+  @@index([used])
+  @@index([expiresAt])
   @@map("invitation_codes")
 }
 
 model Session {
   id        Int       @id @default(autoincrement())
   userId    Int
-  token     String    @unique
-  expiresAt DateTime
-  createdAt DateTime  @default(now())
+  token     String    @unique @db.VarChar(500)
+  expiresAt DateTime  @db.DateTime(0)
+  createdAt DateTime  @default(now()) @db.DateTime(0)
   
-  user      User      @relation(fields: [userId], references: [id])
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   
+  @@index([userId])
+  @@index([expiresAt])
   @@map("sessions")
 }
 
@@ -81,30 +90,36 @@ model DivinationRecord {
   id          Int               @id @default(autoincrement())
   userId      Int
   method      DivinationMethod
-  hexagram    String
-  question    String?
-  interpretation String?
-  createdAt   DateTime          @default(now())
+  hexagram    String            @db.VarChar(100)
+  question    String?           @db.Text
+  interpretation String?        @db.Text
+  createdAt   DateTime          @default(now()) @db.DateTime(0)
   
-  user        User              @relation(fields: [userId], references: [id])
+  user        User              @relation(fields: [userId], references: [id], onDelete: Cascade)
   
+  @@index([userId])
+  @@index([method])
+  @@index([createdAt])
   @@map("divination_records")
 }
 
 model MbtiResult {
   id          Int       @id @default(autoincrement())
   userId      Int
-  mbtiType    String
+  mbtiType    String    @db.VarChar(10)
   eScore      Int       // Extraversion
   sScore      Int       // Sensing
   tScore      Int       // Thinking
   jScore      Int       // Judging
   answers     Json      // Store all question answers
-  createdAt   DateTime  @default(now())
+  createdAt   DateTime  @default(now()) @db.DateTime(0)
   
-  user        User      @relation(fields: [userId], references: [id])
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   matches     MbtiMatch[]
   
+  @@index([userId])
+  @@index([mbtiType])
+  @@index([createdAt])
   @@map("mbti_results")
 }
 
@@ -112,40 +127,49 @@ model MbtiMatch {
   id            Int         @id @default(autoincrement())
   userId        Int
   resultId      Int
-  matchedType   String
+  matchedType   String      @db.VarChar(10)
   compatibility Int         // Percentage 0-100
-  details       String?
-  createdAt     DateTime    @default(now())
+  details       String?     @db.Text
+  createdAt     DateTime    @default(now()) @db.DateTime(0)
   
-  user          User        @relation(fields: [userId], references: [id])
-  result        MbtiResult  @relation(fields: [resultId], references: [id])
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  result        MbtiResult  @relation(fields: [resultId], references: [id], onDelete: Cascade)
   
+  @@index([userId])
+  @@index([resultId])
+  @@index([matchedType])
   @@map("mbti_matches")
 }
 
 model ZodiacPreference {
   id          Int       @id @default(autoincrement())
   userId      Int
-  sign        String    // zodiac sign
-  preference  String?   // user notes about this sign
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  sign        String    @db.VarChar(50)
+  preference  String?   @db.Text
+  createdAt   DateTime  @default(now()) @db.DateTime(0)
+  updatedAt   DateTime  @updatedAt @db.DateTime(0)
   
-  user        User      @relation(fields: [userId], references: [id])
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   
   @@unique([userId, sign])
+  @@index([userId])
+  @@index([sign])
   @@map("zodiac_preferences")
 }
 
 model ZodiacReading {
   id          Int       @id @default(autoincrement())
   userId      Int
-  sign        String
-  readingType String    // "daily", "weekly", "monthly", "yearly"
-  content     String
-  createdAt   DateTime  @default(now())
+  sign        String    @db.VarChar(50)
+  readingType String    @db.VarChar(20)
+  content     String    @db.Text
+  createdAt   DateTime  @default(now()) @db.DateTime(0)
   
-  user        User      @relation(fields: [userId], references: [id])
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   
+  @@index([userId])
+  @@index([sign])
+  @@index([readingType])
+  @@index([createdAt])
   @@map("zodiac_readings")
 }

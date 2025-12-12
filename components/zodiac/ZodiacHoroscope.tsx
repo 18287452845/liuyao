@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { zodiacSigns } from '../../../lib/zodiac'
+import { zodiacSigns } from '../../lib/zodiac'
 
 export default function ZodiacHoroscope() {
   const [selectedSign, setSelectedSign] = useState('')
